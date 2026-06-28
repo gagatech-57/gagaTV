@@ -4,6 +4,8 @@ import Sidebar from './components/Sidebar';
 import TopBar from './components/TopBar';
 import VideoPlayer from './components/VideoPlayer';
 import ChannelGrid from './components/ChannelGrid';
+import SeriesGrid from './components/SeriesGrid';
+import { webSeriesList, animeList } from './utils/mediaLibrary';
 import { Tv, Menu } from 'lucide-react';
 import './App.css';
 
@@ -99,6 +101,35 @@ function App() {
     }
   };
 
+  const handleSelectEpisode = (series, episode) => {
+    const episodeObj = {
+      id: `${series.id}-${episode.id}`,
+      name: `${series.name} - ${episode.title}`,
+      displayName: `${series.name} - ${episode.title}`,
+      url: episode.url,
+      logo: series.logo,
+      group: series.type === 'anime' ? 'Anime' : 'Web Series',
+      isTamil: series.isTamil || false,
+      isIndia: true,
+      description: series.description
+    };
+    setSelectedChannel(episodeObj);
+
+    setRecents(prev => {
+      const filtered = prev.filter(item => item.url !== episodeObj.url);
+      const updated = [episodeObj, ...filtered].slice(0, 15);
+      localStorage.setItem('gagatv_recents', JSON.stringify(updated));
+      return updated;
+    });
+
+    if (window.innerWidth <= 1200) {
+      const playerEl = document.querySelector('.player-panel');
+      if (playerEl) {
+        playerEl.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
+
   // Filter channels based on active section
   const sectionChannels = useMemo(() => {
     switch (activeSection) {
@@ -110,6 +141,9 @@ function App() {
         return favorites;
       case 'recent':
         return recents;
+      case 'webseries':
+      case 'anime':
+        return [];
       case 'all':
       default:
         return channels;
@@ -144,7 +178,6 @@ function App() {
     return result;
   }, [sectionChannels, selectedCategory, searchQuery]);
 
-  // Calculate counts for badges
   const sidebarCounts = useMemo(() => {
     const tamilCount = channels.filter(ch => ch.isTamil).length;
     const indiaCount = channels.filter(ch => ch.isIndia).length;
@@ -162,6 +195,8 @@ function App() {
       all: channels.length,
       tamil: tamilCount,
       india: indiaCount,
+      webseries: webSeriesList.length,
+      anime: animeList.length,
       categories: catCounts
     };
   }, [channels, sectionChannels]);
@@ -224,17 +259,33 @@ function App() {
             onToggleFavorite={handleToggleFavorite}
           />
 
-          {/* Channels grid (Right Column / Bottom Column) */}
-          <ChannelGrid
-            channels={filteredChannels}
-            selectedChannel={selectedChannel}
-            onSelectChannel={handleSelectChannel}
-            favorites={favorites}
-            onToggleFavorite={handleToggleFavorite}
-            categories={sectionCategories}
-            selectedCategory={selectedCategory}
-            onSelectCategory={setSelectedCategory}
-          />
+          {/* Channels/Series grid (Right Column / Bottom Column) */}
+          {activeSection === 'webseries' ? (
+            <SeriesGrid
+              list={webSeriesList}
+              onSelectEpisode={handleSelectEpisode}
+              activeEpisode={selectedChannel}
+              type="webseries"
+            />
+          ) : activeSection === 'anime' ? (
+            <SeriesGrid
+              list={animeList}
+              onSelectEpisode={handleSelectEpisode}
+              activeEpisode={selectedChannel}
+              type="anime"
+            />
+          ) : (
+            <ChannelGrid
+              channels={filteredChannels}
+              selectedChannel={selectedChannel}
+              onSelectChannel={handleSelectChannel}
+              favorites={favorites}
+              onToggleFavorite={handleToggleFavorite}
+              categories={sectionCategories}
+              selectedCategory={selectedCategory}
+              onSelectCategory={setSelectedCategory}
+            />
+          )}
         </main>
       </div>
     </div>
