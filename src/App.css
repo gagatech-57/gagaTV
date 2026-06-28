@@ -1238,9 +1238,13 @@
   }
 
   .card-logo-container {
-    width: 60px !important;
-    height: 60px !important;
-    border-radius: 10px !important;
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 8px !important;
+  }
+
+  .card-logo-placeholder-js {
+    font-size: 0.95rem !important;
   }
 
   .card-name {
