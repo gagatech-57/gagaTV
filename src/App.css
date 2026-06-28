@@ -1222,13 +1222,29 @@
     pointer-events: none !important;
   }
   
-  /* Grid Columns: 3 columns when sidebar is open, 4 columns when collapsed */
-  .app-container.sidebar-open .channel-grid {
-    grid-template-columns: repeat(3, 1fr) !important;
-  }
-  
-  .app-container.sidebar-collapsed .channel-grid {
+  /* Grid Columns: Force exactly 4 columns in a row on big screens */
+  .channel-grid {
     grid-template-columns: repeat(4, 1fr) !important;
+    gap: 20px !important;
+  }
+
+  /* Make channel cards bigger */
+  .channel-card {
+    padding: 20px !important;
+    gap: 14px !important;
+    border-radius: 16px !important;
+    min-height: 160px !important;
+  }
+
+  .card-logo-container {
+    width: 72px !important;
+    height: 72px !important;
+    border-radius: 12px !important;
+  }
+
+  .card-name {
+    font-size: 0.92rem !important;
+    font-weight: 600 !important;
   }
 }
 

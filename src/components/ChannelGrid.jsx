@@ -87,7 +87,7 @@ const ChannelGrid = ({
               const isActive = selectedChannel && selectedChannel.url === channel.url;
               return (
                 <ChannelCard
-                  key={channel.url}
+                  key={channel.id}
                   channel={channel}
                   isActive={isActive}
                   onSelect={onSelectChannel}
