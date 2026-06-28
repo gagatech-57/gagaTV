@@ -166,6 +166,9 @@ function App() {
     };
   }, [channels, sectionChannels]);
 
+  // Guide toggle state (theater mode)
+  const [showGuide, setShowGuide] = useState(true);
+
   if (loading) {
     return (
       <div className="app-loading-screen">
@@ -211,32 +214,34 @@ function App() {
           searchQuery={searchQuery}
           onSearchChange={(query) => {
             setSearchQuery(query);
-            // If user searches, make sure they search inside the current category or reset category
-            // We'll keep category but search query filters down.
           }}
           onMenuToggle={() => setSidebarOpen(!sidebarOpen)}
           totalResults={filteredChannels.length}
         />
 
-        <main className="dashboard-view">
+        <main className={`dashboard-view ${!showGuide ? 'guide-hidden' : ''}`}>
           {/* Large Hero Video Player (Left Column) */}
           <VideoPlayer
             channel={selectedChannel}
             isFavorite={selectedChannel ? favorites.some(fav => fav.url === selectedChannel.url) : false}
             onToggleFavorite={handleToggleFavorite}
+            showGuide={showGuide}
+            onToggleGuide={() => setShowGuide(!showGuide)}
           />
 
           {/* Channels grid (Right Column / Bottom Column) */}
-          <ChannelGrid
-            channels={filteredChannels}
-            selectedChannel={selectedChannel}
-            onSelectChannel={handleSelectChannel}
-            favorites={favorites}
-            onToggleFavorite={handleToggleFavorite}
-            categories={sectionCategories}
-            selectedCategory={selectedCategory}
-            onSelectCategory={setSelectedCategory}
-          />
+          {showGuide && (
+            <ChannelGrid
+              channels={filteredChannels}
+              selectedChannel={selectedChannel}
+              onSelectChannel={handleSelectChannel}
+              favorites={favorites}
+              onToggleFavorite={handleToggleFavorite}
+              categories={sectionCategories}
+              selectedCategory={selectedCategory}
+              onSelectCategory={setSelectedCategory}
+            />
+          )}
         </main>
       </div>
     </div>

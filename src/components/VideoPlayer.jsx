@@ -17,7 +17,8 @@ import {
   SlidersHorizontal,
   X,
   FastForward,
-  Rewind
+  Rewind,
+  LayoutGrid
 } from 'lucide-react';
 
 // Dynamic URL resolver to map offline playlist streams to active HLS links
@@ -117,7 +118,7 @@ const getOfficialUrl = (channel) => {
   return '';
 };
 
-const VideoPlayer = ({ channel, isFavorite, onToggleFavorite }) => {
+const VideoPlayer = ({ channel, isFavorite, onToggleFavorite, showGuide, onToggleGuide }) => {
   const videoRef = useRef(null);
   const containerRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -414,12 +415,18 @@ const VideoPlayer = ({ channel, isFavorite, onToggleFavorite }) => {
     if (!document.fullscreenElement) {
       container.requestFullscreen().then(() => {
         setIsFullscreen(true);
+        if (screen.orientation && screen.orientation.lock) {
+          screen.orientation.lock('portrait').catch(() => {});
+        }
       }).catch(err => {
         console.error(err);
       });
     } else {
       document.exitFullscreen().then(() => {
         setIsFullscreen(false);
+        if (screen.orientation && screen.orientation.unlock) {
+          screen.orientation.unlock();
+        }
       });
     }
   };
@@ -858,6 +865,15 @@ const VideoPlayer = ({ channel, isFavorite, onToggleFavorite }) => {
                     {/* Reload */}
                     <button onClick={retryStream} className="control-btn" data-tooltip="Refresh Broadcast">
                       <RefreshCw size={16} />
+                    </button>
+
+                    {/* Toggle Channel Guide (Theater Mode) */}
+                    <button 
+                      onClick={onToggleGuide} 
+                      className={`control-btn guide-toggle-btn ${!showGuide ? 'active' : ''}`} 
+                      data-tooltip={showGuide ? "Hide Channel Guide" : "Show Channel Guide"}
+                    >
+                      <LayoutGrid size={18} />
                     </button>
                     
                     {/* Fullscreen */}
