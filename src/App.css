@@ -1210,6 +1210,12 @@
 
 /* Desktop Sidebar Toggle and Grid Layout Columns */
 @media (min-width: 1025px) {
+  /* Prevent grid layout stretch from category bar */
+  .player-section,
+  .channel-list-section {
+    min-width: 0 !important;
+  }
+
   /* Sidebar transition and collapse */
   .sidebar {
     transition: width var(--transition-normal), opacity var(--transition-normal);

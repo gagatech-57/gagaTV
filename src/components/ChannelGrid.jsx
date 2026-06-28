@@ -49,13 +49,7 @@ const ChannelGrid = ({
 
   return (
     <div className="channel-list-section">
-      <div className="section-header">
-        <h3 className="section-title">
-          <Tv size={20} className="text-gradient-accent" />
-          <span>Channel Guide</span>
-        </h3>
-        <span className="section-subtitle">{channels.length} channels available</span>
-      </div>
+
 
       {categories.length > 0 && (
         <div className="category-filter-bar">
