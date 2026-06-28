@@ -166,9 +166,6 @@ function App() {
     };
   }, [channels, sectionChannels]);
 
-  // Guide toggle state (theater mode)
-  const [showGuide, setShowGuide] = useState(true);
-
   if (loading) {
     return (
       <div className="app-loading-screen">
@@ -219,29 +216,25 @@ function App() {
           totalResults={filteredChannels.length}
         />
 
-        <main className={`dashboard-view ${!showGuide ? 'guide-hidden' : ''}`}>
+        <main className="dashboard-view">
           {/* Large Hero Video Player (Left Column) */}
           <VideoPlayer
             channel={selectedChannel}
             isFavorite={selectedChannel ? favorites.some(fav => fav.url === selectedChannel.url) : false}
             onToggleFavorite={handleToggleFavorite}
-            showGuide={showGuide}
-            onToggleGuide={() => setShowGuide(!showGuide)}
           />
 
           {/* Channels grid (Right Column / Bottom Column) */}
-          {showGuide && (
-            <ChannelGrid
-              channels={filteredChannels}
-              selectedChannel={selectedChannel}
-              onSelectChannel={handleSelectChannel}
-              favorites={favorites}
-              onToggleFavorite={handleToggleFavorite}
-              categories={sectionCategories}
-              selectedCategory={selectedCategory}
-              onSelectCategory={setSelectedCategory}
-            />
-          )}
+          <ChannelGrid
+            channels={filteredChannels}
+            selectedChannel={selectedChannel}
+            onSelectChannel={handleSelectChannel}
+            favorites={favorites}
+            onToggleFavorite={handleToggleFavorite}
+            categories={sectionCategories}
+            selectedCategory={selectedCategory}
+            onSelectCategory={setSelectedCategory}
+          />
         </main>
       </div>
     </div>

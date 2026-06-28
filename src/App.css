@@ -1058,14 +1058,6 @@
   }
 }
 
-/* Theater Mode (Guide Hidden) */
-.dashboard-view.guide-hidden {
-  grid-template-columns: 1fr !important;
-}
-.dashboard-view.guide-hidden .player-section {
-  width: 100% !important;
-  max-width: 100% !important;
-}
 
 
 /* Gesture Overlay & Double Tap seek HUD */

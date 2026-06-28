@@ -118,7 +118,7 @@ const getOfficialUrl = (channel) => {
   return '';
 };
 
-const VideoPlayer = ({ channel, isFavorite, onToggleFavorite, showGuide, onToggleGuide }) => {
+const VideoPlayer = ({ channel, isFavorite, onToggleFavorite }) => {
   const videoRef = useRef(null);
   const containerRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -416,7 +416,7 @@ const VideoPlayer = ({ channel, isFavorite, onToggleFavorite, showGuide, onToggl
       container.requestFullscreen().then(() => {
         setIsFullscreen(true);
         if (screen.orientation && screen.orientation.lock) {
-          screen.orientation.lock('portrait').catch(() => {});
+          screen.orientation.lock('landscape').catch(() => {});
         }
       }).catch(err => {
         console.error(err);
@@ -463,9 +463,23 @@ const VideoPlayer = ({ channel, isFavorite, onToggleFavorite, showGuide, onToggl
         triggerFeedback(isPlaying ? 'Pause' : 'Play');
       }
     } else {
-      // Single tap: toggle overlay controls visibility
+      // Single tap: toggle controls visibility (tap to hide, tap to show)
       tapTimeoutRef.current = setTimeout(() => {
-        handleMouseMove();
+        setControlsVisible(prev => {
+          if (prev) {
+            clearTimeout(controlsTimeoutRef.current);
+            return false;
+          } else {
+            // Show controls and set 3-second auto-hide
+            if (isPlaying && !showSettings) {
+              clearTimeout(controlsTimeoutRef.current);
+              controlsTimeoutRef.current = setTimeout(() => {
+                setControlsVisible(false);
+              }, 3000);
+            }
+            return true;
+          }
+        });
       }, 220);
     }
   };
@@ -865,15 +879,6 @@ const VideoPlayer = ({ channel, isFavorite, onToggleFavorite, showGuide, onToggl
                     {/* Reload */}
                     <button onClick={retryStream} className="control-btn" data-tooltip="Refresh Broadcast">
                       <RefreshCw size={16} />
-                    </button>
-
-                    {/* Toggle Channel Guide (Theater Mode) */}
-                    <button 
-                      onClick={onToggleGuide} 
-                      className={`control-btn guide-toggle-btn ${!showGuide ? 'active' : ''}`} 
-                      data-tooltip={showGuide ? "Hide Channel Guide" : "Show Channel Guide"}
-                    >
-                      <LayoutGrid size={18} />
                     </button>
                     
                     {/* Fullscreen */}
