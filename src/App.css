@@ -1222,28 +1222,28 @@
     pointer-events: none !important;
   }
   
-  /* Grid Columns: Force exactly 4 columns in a row on big screens */
+  /* Grid Columns: Auto-fill grid to keep cards compact and prevent stretching */
   .channel-grid {
-    grid-template-columns: repeat(4, 1fr) !important;
-    gap: 20px !important;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important;
+    gap: 16px !important;
   }
 
-  /* Make channel cards bigger */
+  /* Compact premium channel cards */
   .channel-card {
-    padding: 20px !important;
-    gap: 14px !important;
-    border-radius: 16px !important;
-    min-height: 160px !important;
+    padding: 14px !important;
+    gap: 10px !important;
+    border-radius: 12px !important;
+    min-height: 120px !important;
   }
 
   .card-logo-container {
-    width: 72px !important;
-    height: 72px !important;
-    border-radius: 12px !important;
+    width: 60px !important;
+    height: 60px !important;
+    border-radius: 10px !important;
   }
 
   .card-name {
-    font-size: 0.92rem !important;
+    font-size: 0.85rem !important;
     font-weight: 600 !important;
   }
 }
