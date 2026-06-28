@@ -1216,6 +1216,18 @@
     min-width: 0 !important;
   }
 
+  /* Lock viewport on desktop and scroll channel list independently */
+  .dashboard-view {
+    height: calc(100vh - 80px) !important;
+    overflow: hidden !important;
+  }
+
+  .channel-list-section {
+    overflow-y: auto !important;
+    height: 100% !important;
+    padding-right: 8px;
+  }
+
   /* Sidebar transition and collapse */
   .sidebar {
     transition: width var(--transition-normal), opacity var(--transition-normal);
