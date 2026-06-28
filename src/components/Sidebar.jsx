@@ -66,7 +66,7 @@ const Sidebar = ({
       <div className="sidebar-header">
         <h1 className="sidebar-logo">
           <Tv className="text-gradient-accent" size={28} strokeWidth={2.5} />
-          <span className="text-gradient-primary">Gaga TV</span>
+          <span className="text-gradient-primary">Gaga Play</span>
         </h1>
         <button 
           onClick={onClose} 
@@ -118,8 +118,8 @@ const Sidebar = ({
       </div>
 
       <div className="sidebar-footer">
-        <div>Gaga TV Online Player</div>
-        <div style={{ fontSize: '0.7rem', opacity: 0.6 }}>Free Stream Aggregator v1.1.0</div>
+        <div>Gaga Play OTT Portal</div>
+        <div style={{ fontSize: '0.7rem', opacity: 0.6 }}>Free Stream Aggregator v1.2.0</div>
       </div>
     </aside>
   );
