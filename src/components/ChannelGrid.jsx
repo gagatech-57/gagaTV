@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ChannelCard from './ChannelCard';
 import { Tv } from 'lucide-react';
 
@@ -12,6 +12,41 @@ const ChannelGrid = ({
   selectedCategory = 'All',
   onSelectCategory
 }) => {
+  // Infinite Scroll / Lazy Loading State to handle 5,500+ channels instantly
+  const [visibleCount, setVisibleCount] = useState(80);
+  const sentinelRef = useRef(null);
+
+  // Reset pagination when channel dataset changes (on category search/filter)
+  useEffect(() => {
+    setVisibleCount(80);
+  }, [channels, selectedCategory]);
+
+  // Setup IntersectionObserver for native infinite scrolling
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        setVisibleCount((prev) => Math.min(prev + 80, channels.length));
+      }
+    }, {
+      rootMargin: '150px', // Pre-fetch before user reaches the exact end
+      threshold: 0.1
+    });
+
+    const sentinel = sentinelRef.current;
+    if (sentinel) {
+      observer.observe(sentinel);
+    }
+
+    return () => {
+      if (sentinel) {
+        observer.unobserve(sentinel);
+      }
+      observer.disconnect();
+    };
+  }, [channels, visibleCount]);
+
+  const visibleChannels = channels.slice(0, visibleCount);
+
   return (
     <div className="channel-list-section">
       <div className="section-header">
@@ -45,22 +80,43 @@ const ChannelGrid = ({
           </p>
         </div>
       ) : (
-        <div className="channel-grid animate-fade-in">
-          {channels.map((channel) => {
-            const isFav = favorites.some(fav => fav.url === channel.url);
-            const isActive = selectedChannel && selectedChannel.url === channel.url;
-            return (
-              <ChannelCard
-                key={channel.url}
-                channel={channel}
-                isActive={isActive}
-                onSelect={onSelectChannel}
-                isFavorite={isFav}
-                onToggleFavorite={onToggleFavorite}
-              />
-            );
-          })}
-        </div>
+        <>
+          <div className="channel-grid animate-fade-in">
+            {visibleChannels.map((channel) => {
+              const isFav = favorites.some(fav => fav.url === channel.url);
+              const isActive = selectedChannel && selectedChannel.url === channel.url;
+              return (
+                <ChannelCard
+                  key={channel.url}
+                  channel={channel}
+                  isActive={isActive}
+                  onSelect={onSelectChannel}
+                  isFavorite={isFav}
+                  onToggleFavorite={onToggleFavorite}
+                />
+              );
+            })}
+          </div>
+
+          {/* Sentinel element to trigger loading the next batch of channels */}
+          {visibleCount < channels.length && (
+            <div 
+              ref={sentinelRef} 
+              style={{ 
+                height: '40px', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                color: 'var(--text-secondary)',
+                fontSize: '0.82rem',
+                opacity: 0.5,
+                marginTop: '12px'
+              }}
+            >
+              Loading more channels...
+            </div>
+          )}
+        </>
       )}
     </div>
   );

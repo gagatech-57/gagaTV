@@ -11,8 +11,7 @@ import {
   Info,
   X,
   Sparkles,
-  Globe,
-  Flame
+  Globe
 } from 'lucide-react';
 
 const Sidebar = ({ 
@@ -31,8 +30,6 @@ const Sidebar = ({
     { id: 'all', label: 'All Channels', icon: Tv, count: counts.all || 0 },
     { id: 'tamil', label: 'Tamil Channels', icon: Sparkles, count: counts.tamil || 0, badge: 'tam' },
     { id: 'india', label: 'Indian Channels', icon: Globe, count: counts.india || 0, badge: 'in' },
-    { id: 'webseries', label: 'Web Series', icon: Film, count: counts.webseries || 0, color: 'var(--accent-blue)' },
-    { id: 'anime', label: 'Anime Shows', icon: Flame, count: counts.anime || 0, color: 'var(--accent-indigo)' },
     { id: 'favorites', label: 'Favorites', icon: Heart, count: favoritesCount, color: '#ef4444' },
     { id: 'recent', label: 'Recently Watched', icon: Clock, count: recentCount }
   ];
