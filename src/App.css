@@ -1225,7 +1225,7 @@
   .channel-list-section {
     overflow-y: auto !important;
     height: 100% !important;
-    padding-right: 8px;
+    padding-right: 20px !important;
   }
 
   /* Sidebar transition and collapse */
