@@ -15,7 +15,9 @@ import {
   Settings, 
   ExternalLink,
   SlidersHorizontal,
-  X
+  X,
+  FastForward,
+  Rewind
 } from 'lucide-react';
 
 // Dynamic URL resolver to map offline playlist streams to active HLS links
@@ -87,27 +89,32 @@ const getPlayableUrl = (channel) => {
     return 'https://stream.rojatv.cloud/rojatv/rojatv/index.m3u8';
   }
 
-  // 10. Zee channels mapping
-  if (name.includes('zee') || displayName.includes('zee')) {
+  // 10. Zee Tamil News mapping
+  if (name.includes('zee tamil news') || displayName.includes('zee tamil news')) {
     return 'https://raw.githubusercontent.com/amazeyourself/adaptive-streaming-hls/master/zeetamilnews/zeetamilnews.m3u8';
-  }
-
-  // 11. Sun TV / KTV / Sun News / Sun Music mapping
-  if (name.includes('sun') || displayName.includes('sun') || name.includes('ktv') || displayName.includes('ktv')) {
-    if (name.includes('news') || displayName.includes('news')) {
-      return 'https://live-cf-polimernews.dailyhunt.in/master.m3u8';
-    }
-    // Return Thanthi One for entertainment/movie channels
-    return 'https://mumt07.tangotv.in/zHjX9OFlTHANTHIONE/index.m3u8';
-  }
-
-  // 12. Jio / Sony / others fallback
-  if (name.includes('sony') || displayName.includes('sony') || name.includes('pix') || name.includes('max') || name.includes('ten')) {
-    return 'https://mumt07.tangotv.in/zHjX9OFlTHANTHIONE/index.m3u8';
   }
 
   // Default fallback (returns original URL)
   return channel.url;
+};
+
+const getOfficialUrl = (channel) => {
+  if (!channel) return '';
+  const name = channel.name.toLowerCase();
+  
+  if (name.includes('sun tv') || name.includes('ktv') || name.includes('sun music') || name.includes('sun life') || name.includes('gemini')) {
+    return 'https://www.sunnxt.com/';
+  }
+  if (name.includes('zee') || name.includes('sarthak') || name.includes('anmol') || name.includes('zindagi')) {
+    return 'https://www.zee5.com/';
+  }
+  if (name.includes('vijay') || name.includes('sports') || name.includes('star plus') || name.includes('star gold') || name.includes('bindass') || name.includes('utsav')) {
+    return 'https://www.hotstar.com/';
+  }
+  if (name.includes('colors') || name.includes('sab') || name.includes('sony') || name.includes('max')) {
+    return 'https://www.sonyliv.com/';
+  }
+  return '';
 };
 
 const VideoPlayer = ({ channel, isFavorite, onToggleFavorite }) => {
@@ -132,9 +139,23 @@ const VideoPlayer = ({ channel, isFavorite, onToggleFavorite }) => {
   const [showSettings, setShowSettings] = useState(false);
   const [pipActive, setPipActive] = useState(false);
   
+  // Tap Gestures state
+  const [feedback, setFeedback] = useState({ show: false, text: '', key: 0 });
+  const tapTimeoutRef = useRef(null);
+
   const hlsInstanceRef = useRef(null);
   const controlsTimeoutRef = useRef(null);
   const connectionTimeoutRef = useRef(null);
+
+  // Helper for logo initials
+  const getInitials = (name) => {
+    if (!name) return 'TV';
+    const words = name.trim().split(/\s+/);
+    if (words.length >= 2) {
+      return (words[0].charAt(0) + words[1].charAt(0)).toUpperCase();
+    }
+    return name.trim().substring(0, 2).toUpperCase();
+  };
 
   // Reset video settings and player states on channel change
   useEffect(() => {
@@ -414,6 +435,38 @@ const VideoPlayer = ({ channel, isFavorite, onToggleFavorite }) => {
     }
   };
 
+  // Double-tap Seek Gesture Handlers for Mobile (Left / Center / Right Overlay Zones)
+  const handleZoneClick = (e, zone) => {
+    if (e.button !== 0) return; // Only trigger on left clicks / touches
+    e.stopPropagation();
+
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (e.detail === 2) { // Native browser Double Click / Double Tap
+      clearTimeout(tapTimeoutRef.current);
+      if (zone === 'left') {
+        video.currentTime = Math.max(0, video.currentTime - 10);
+        triggerFeedback('Rewind -10s');
+      } else if (zone === 'right') {
+        video.currentTime = Math.min(video.duration || 99999, video.currentTime + 10);
+        triggerFeedback('Forward +10s');
+      } else if (zone === 'center') {
+        togglePlay();
+        triggerFeedback(isPlaying ? 'Pause' : 'Play');
+      }
+    } else {
+      // Single tap: toggle overlay controls visibility
+      tapTimeoutRef.current = setTimeout(() => {
+        handleMouseMove();
+      }, 220);
+    }
+  };
+
+  const triggerFeedback = (text) => {
+    setFeedback({ show: true, text, key: Date.now() });
+  };
+
   useEffect(() => {
     if (!isPlaying) {
       setControlsVisible(true);
@@ -520,17 +573,39 @@ const VideoPlayer = ({ channel, isFavorite, onToggleFavorite }) => {
             <p style={{ fontSize: '0.8rem', opacity: 0.4, maxWidth: '280px', marginTop: '-8px' }}>
               Free stream links can occasionally drop. Try reloading or picking another channel.
             </p>
-            <button onClick={retryStream} className="player-fallback-btn">
-              <RefreshCw size={14} style={{ marginRight: '8px', display: 'inline' }} />
-              Retry Connection
-            </button>
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '4px' }}>
+              <button onClick={retryStream} className="player-fallback-btn">
+                <RefreshCw size={14} style={{ marginRight: '8px', display: 'inline' }} />
+                Retry Connection
+              </button>
+              {getOfficialUrl(channel) && (
+                <a 
+                  href={getOfficialUrl(channel)} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="player-fallback-btn"
+                  style={{ 
+                    background: 'linear-gradient(135deg, var(--accent-secondary) 0%, var(--accent-primary) 100%)', 
+                    color: '#060b16',
+                    fontWeight: '600',
+                    textDecoration: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                >
+                  <ExternalLink size={14} style={{ marginRight: '8px' }} />
+                  Watch on Official Portal
+                </a>
+              )}
+            </div>
           </div>
         ) : (
           <div className="video-container">
             <video
               ref={videoRef}
               className="video-element"
-              onClick={togglePlay}
+              onDoubleClick={toggleFullscreen}
               onPlay={() => setIsPlaying(true)}
               onPause={() => setIsPlaying(false)}
               style={{
@@ -539,13 +614,31 @@ const VideoPlayer = ({ channel, isFavorite, onToggleFavorite }) => {
               playsInline
             />
 
+            {/* Gesture Detection Overlay Zones */}
+            <div className="gesture-overlay">
+              <div className="gesture-zone left" onClick={(e) => handleZoneClick(e, 'left')}></div>
+              <div className="gesture-zone center" onClick={(e) => handleZoneClick(e, 'center')}></div>
+              <div className="gesture-zone right" onClick={(e) => handleZoneClick(e, 'right')}></div>
+            </div>
+
+            {/* Gesture Ripple / HUD Feedback */}
+            {feedback.show && (
+              <div key={feedback.key} className="gesture-feedback glass-panel animate-feedback">
+                {feedback.text.includes('Forward') && <FastForward size={24} />}
+                {feedback.text.includes('Rewind') && <Rewind size={24} />}
+                {feedback.text === 'Play' && <Play size={24} fill="white" />}
+                {feedback.text === 'Pause' && <Pause size={24} fill="white" />}
+                <span>{feedback.text}</span>
+              </div>
+            )}
+
             {isLoading && (
               <div 
                 className="player-fallback" 
                 style={{ 
                   position: 'absolute', 
                   inset: 0, 
-                  background: 'rgba(0,0,0,0.85)',
+                  background: 'rgba(3, 6, 15, 0.9)',
                   backdropFilter: 'blur(8px)' 
                 }}
               >
@@ -561,14 +654,39 @@ const VideoPlayer = ({ channel, isFavorite, onToggleFavorite }) => {
               {/* Header Info */}
               <div className="player-header">
                 <div className="player-channel-info">
-                  {channel.logo && (
+                  {channel.logo ? (
                     <img 
                       src={channel.logo} 
                       alt="" 
                       className="player-channel-logo" 
-                      onError={(e) => e.target.style.display = 'none'}
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        const parent = e.target.parentElement;
+                        if (parent) {
+                          const placeholder = parent.querySelector('.player-logo-placeholder');
+                          if (placeholder) placeholder.style.display = 'flex';
+                        }
+                      }}
                     />
-                  )}
+                  ) : null}
+                  <div 
+                    className="player-logo-placeholder"
+                    style={{
+                      display: channel.logo ? 'none' : 'flex',
+                      width: '44px',
+                      height: '44px',
+                      borderRadius: '8px',
+                      background: 'linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-indigo) 100%)',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontWeight: 800,
+                      fontSize: '1rem',
+                      color: 'white',
+                      border: '1px solid rgba(255,255,255,0.1)'
+                    }}
+                  >
+                    {getInitials(channel.displayName || channel.name)}
+                  </div>
                   <div>
                     <h4 className="player-channel-name">{channel.displayName || channel.name}</h4>
                     <div className="player-channel-meta">
@@ -687,19 +805,25 @@ const VideoPlayer = ({ channel, isFavorite, onToggleFavorite }) => {
                       {isPlaying ? <Pause size={20} fill="white" /> : <Play size={20} fill="white" />}
                     </button>
                     
-                    <div className="volume-container">
-                      <button onClick={toggleMute} className="control-btn">
+                    {/* Unique Volume Bar Control */}
+                    <div className="volume-container unique-volume-control">
+                      <button onClick={toggleMute} className="control-btn volume-mute-toggle">
                         {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
                       </button>
-                      <input
-                        type="range"
-                        min="0"
-                        max="1"
-                        step="0.05"
-                        value={isMuted ? 0 : volume}
-                        onChange={handleVolumeChange}
-                        className="volume-slider"
-                      />
+                      <div className="unique-volume-slider-wrapper">
+                        <input
+                          type="range"
+                          min="0"
+                          max="1"
+                          step="0.05"
+                          value={isMuted ? 0 : volume}
+                          onChange={handleVolumeChange}
+                          className="volume-slider unique-range-input"
+                          style={{
+                            background: `linear-gradient(to right, var(--accent-primary) ${(isMuted ? 0 : volume) * 100}%, rgba(255,255,255,0.15) ${(isMuted ? 0 : volume) * 100}%)`
+                          }}
+                        />
+                      </div>
                     </div>
                   </div>
 
@@ -758,14 +882,33 @@ const VideoPlayer = ({ channel, isFavorite, onToggleFavorite }) => {
                   alt="" 
                   className="detail-logo"
                   onError={(e) => {
-                    e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='20' height='15' x='2' y='7' rx='2' ry='2'%3E%3C/rect%3E%3Cpolyline points='17 2 12 7 7 2'%3E%3C/polyline%3E%3C/svg%3E";
+                    e.target.style.display = 'none';
+                    const parent = e.target.parentElement;
+                    if (parent) {
+                      const placeholder = parent.querySelector('.detail-logo-placeholder');
+                      if (placeholder) placeholder.style.display = 'flex';
+                    }
                   }}
                 />
-              ) : (
-                <div className="detail-logo" style={{ display: 'flex', alignItems: 'center', justifyItems: 'center' }}>
-                  <Tv size={24} style={{ color: 'var(--text-muted)', margin: 'auto' }} />
-                </div>
-              )}
+              ) : null}
+              <div 
+                className="detail-logo-placeholder"
+                style={{
+                  display: channel.logo ? 'none' : 'flex',
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '8px',
+                  background: 'linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-indigo) 100%)',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: 800,
+                  fontSize: '1rem',
+                  color: 'white',
+                  border: '1px solid rgba(255,255,255,0.1)'
+                }}
+              >
+                {getInitials(channel.displayName || channel.name)}
+              </div>
               <div>
                 <h2 className="detail-title">{channel.displayName || channel.name}</h2>
                 <div className="detail-badge-group">

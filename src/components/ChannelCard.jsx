@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heart, Tv } from 'lucide-react';
+import { Heart } from 'lucide-react';
 
 const ChannelCard = ({ 
   channel, 
@@ -8,14 +8,35 @@ const ChannelCard = ({
   isFavorite, 
   onToggleFavorite 
 }) => {
-  const getFirstLetter = (name) => {
+  const getInitials = (name) => {
     if (!name) return 'TV';
-    return name.trim().charAt(0).toUpperCase();
+    const words = name.trim().split(/\s+/);
+    if (words.length >= 2) {
+      return (words[0].charAt(0) + words[1].charAt(0)).toUpperCase();
+    }
+    return name.trim().substring(0, 2).toUpperCase();
   };
 
   const handleFavoriteClick = (e) => {
     e.stopPropagation();
     onToggleFavorite(channel);
+  };
+
+  // Generate a premium unique gradient background based on channel name
+  const getRandomGradient = (name) => {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const colors = [
+      ['#6366f1', '#a855f7'], // Indigo -> Purple
+      ['#3b82f6', '#06b6d4'], // Blue -> Cyan
+      ['#ec4899', '#f43f5e'], // Pink -> Rose
+      ['#14b8a6', '#00f5a0'], // Teal -> Mint
+      ['#f59e0b', '#ec4899']  // Amber -> Pink
+    ];
+    const index = Math.abs(hash) % colors.length;
+    return `linear-gradient(135deg, ${colors[index][0]} 0%, ${colors[index][1]} 100%)`;
   };
 
   return (
@@ -28,7 +49,7 @@ const ChannelCard = ({
         className={`card-favorite-btn ${isFavorite ? 'is-fav' : ''}`}
         aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
       >
-        <Heart size={16} fill={isFavorite ? 'currentColor' : 'none'} />
+        <Heart size={15} fill={isFavorite ? 'currentColor' : 'none'} />
       </button>
 
       {channel.isTamil && (
@@ -45,7 +66,6 @@ const ChannelCard = ({
             className="card-logo"
             loading="lazy"
             onError={(e) => {
-              // Hide broken image and show a fallback avatar
               e.target.style.display = 'none';
               const parent = e.target.parentElement;
               if (parent) {
@@ -63,12 +83,16 @@ const ChannelCard = ({
             height: '100%',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: '1.5rem',
+            fontSize: '1.25rem',
             fontWeight: '800',
-            color: 'var(--text-muted)'
+            color: 'white',
+            background: getRandomGradient(channel.displayName || channel.name),
+            borderRadius: '10px',
+            textShadow: '0 2px 4px rgba(0,0,0,0.3)',
+            boxShadow: 'inset 0 0 10px rgba(255,255,255,0.2)'
           }}
         >
-          {getFirstLetter(channel.displayName || channel.name)}
+          {getInitials(channel.displayName || channel.name)}
         </div>
       </div>
 
@@ -76,7 +100,7 @@ const ChannelCard = ({
         {channel.displayName || channel.name}
       </div>
       
-      <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: 'auto' }}>
+      <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', opacity: 0.6, marginTop: 'auto' }}>
         {channel.group}
       </div>
     </div>
