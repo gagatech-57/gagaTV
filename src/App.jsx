@@ -20,7 +20,7 @@ function App() {
   
   // UI states
   const [loading, setLoading] = useState(true);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 1024);
 
   // Load channels on mount
   useEffect(() => {
@@ -177,7 +177,7 @@ function App() {
   }
 
   return (
-    <div className="app-container">
+    <div className={`app-container ${sidebarOpen ? 'sidebar-open' : 'sidebar-collapsed'}`}>
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div 

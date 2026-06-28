@@ -1,33 +1,33 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  /* Colors - Premium Navy & Sapphire Glassmorphism Theme */
-  --bg-base: #060b16; /* Deep Midnight Navy */
-  --bg-sidebar: rgba(11, 20, 38, 0.8); /* Glassy Navy */
-  --bg-surface: rgba(255, 255, 255, 0.03);
-  --bg-surface-hover: rgba(255, 255, 255, 0.07);
-  --border-color: rgba(255, 255, 255, 0.06);
+  /* Colors - Sophisticated Midnight Obsidian & Emerald Mint Glass Theme */
+  --bg-base: #080c10; /* Pure Midnight Obsidian */
+  --bg-sidebar: rgba(18, 24, 34, 0.8); /* Obsidian Glass */
+  --bg-surface: rgba(255, 255, 255, 0.02);
+  --bg-surface-hover: rgba(255, 255, 255, 0.06);
+  --border-color: rgba(255, 255, 255, 0.05);
   
-  --accent-primary: #00d2ff; /* Vibrant Electric Cyan */
-  --accent-secondary: #00f5a0; /* Glowing Neon Green / Mint */
-  --accent-blue: #3b82f6; /* Sapphire Blue */
-  --accent-indigo: #6366f1; /* Cosmic Indigo */
-  --accent-red: #f43f5e; /* Rose Red for Live */
-  --accent-gold: #fbbf24; /* Warm Gold */
+  --accent-primary: #10b981; /* Glowing Emerald Green */
+  --accent-secondary: #34d399; /* Vibrant Mint Green */
+  --accent-blue: #00d2ff; /* Sapphire Cyan */
+  --accent-indigo: #8b5cf6; /* Cyber Purple */
+  --accent-red: #ef4444; /* Rose Red for Live */
+  --accent-gold: #f59e0b; /* Warm Amber */
   
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #475569;
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
+  --text-muted: #4b5563;
   
   /* Fonts */
   --font-display: 'Outfit', sans-serif;
   --font-sans: 'Inter', sans-serif;
 
   /* Glassmorphism */
-  --glass-bg: rgba(11, 22, 44, 0.65); /* Navy frosted glass */
-  --glass-border: rgba(255, 255, 255, 0.08); /* Clean white highlight */
-  --glass-shadow: 0 20px 50px 0 rgba(0, 0, 0, 0.6);
-  --glass-blur: blur(24px);
+  --glass-bg: rgba(18, 24, 34, 0.7); /* Obsidian frosted glass */
+  --glass-border: rgba(16, 185, 129, 0.15); /* Glowing Emerald Highlight */
+  --glass-shadow: 0 20px 50px 0 rgba(0, 0, 0, 0.7);
+  --glass-blur: blur(28px);
 
   /* Transitions */
   --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
@@ -51,10 +51,10 @@ body {
   height: 100vh;
   width: 100vw;
   background-image: 
-    radial-gradient(at 0% 0%, rgba(0, 210, 255, 0.15) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
-    radial-gradient(at 50% 0%, rgba(0, 245, 160, 0.05) 0px, transparent 40%),
-    radial-gradient(at 50% 50%, rgba(6, 11, 22, 1) 0px, transparent 100%);
+    radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(0, 210, 255, 0.08) 0px, transparent 50%),
+    radial-gradient(at 50% 0%, rgba(52, 211, 153, 0.06) 0px, transparent 40%),
+    radial-gradient(at 50% 50%, rgba(8, 12, 16, 1) 0px, transparent 100%);
   background-attachment: fixed;
 }
 

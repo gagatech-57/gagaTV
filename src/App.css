@@ -955,14 +955,12 @@
     overflow-y: auto;
   }
 
-  /* Make Player Sticky on Mobile so users can watch while browsing channels */
+  /* Normal flow Player on Mobile */
   .player-section {
-    position: sticky;
-    top: 0;
-    z-index: 80;
+    position: static !important;
     background: var(--bg-base);
-    padding-bottom: 8px;
-    margin-bottom: 0;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
     border-bottom: 1px solid var(--border-color);
   }
 
@@ -1191,5 +1189,29 @@
 
 .unique-range-input::-webkit-slider-thumb:hover {
   transform: scale(1.35);
+}
+
+/* Desktop Sidebar Toggle and Grid Layout Columns */
+@media (min-width: 1025px) {
+  /* Sidebar transition and collapse */
+  .sidebar {
+    transition: width var(--transition-normal), opacity var(--transition-normal);
+  }
+  
+  .app-container.sidebar-collapsed .sidebar {
+    width: 0 !important;
+    opacity: 0 !important;
+    border-right: none !important;
+    pointer-events: none !important;
+  }
+  
+  /* Grid Columns: 3 columns when sidebar is open, 4 columns when collapsed */
+  .app-container.sidebar-open .channel-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+  
+  .app-container.sidebar-collapsed .channel-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
 }
 
