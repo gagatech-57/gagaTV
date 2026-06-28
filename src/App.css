@@ -886,9 +886,9 @@
   color: var(--text-secondary);
 }
 
-/* Mobile Sidebar Menu Button */
+/* Sidebar Menu Button (Always Visible) */
 .menu-toggle-btn {
-  display: none;
+  display: flex;
   align-items: center;
   justify-content: center;
   width: 44px;
@@ -898,6 +898,11 @@
   background: rgba(255, 255, 255, 0.02);
   color: var(--text-secondary);
   cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.menu-toggle-btn:hover {
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
 }
 
 /* Responsive Overrides */
@@ -982,6 +987,18 @@
 
   .channel-card-name {
     font-size: 0.8rem;
+  }
+
+  .section-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 4px !important;
+  }
+  .section-title {
+    font-size: 1.25rem !important;
+  }
+  .section-subtitle {
+    font-size: 0.78rem !important;
   }
 
   .category-filter-bar {
